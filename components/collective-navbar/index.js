@@ -12,6 +12,7 @@ import { Settings } from '@styled-icons/material/Settings';
 import { Stack } from '@styled-icons/remix-line/Stack';
 import themeGet from '@styled-system/theme-get';
 import { get, pickBy, without } from 'lodash';
+import { useRouter } from 'next/router';
 import { FormattedMessage, useIntl } from 'react-intl';
 import styled, { createGlobalStyle, css } from 'styled-components';
 import { display } from 'styled-system';
@@ -30,6 +31,7 @@ import AddFundsBtn from '../AddFundsBtn';
 import ApplyToHostBtn from '../ApplyToHostBtn';
 import Avatar from '../Avatar';
 import { Dimensions, Sections } from '../collective-page/_constants';
+import ContactCollectiveModal from '../ContactCollectiveModal';
 import Container from '../Container';
 import { Box, Flex } from '../Grid';
 import Link from '../Link';
@@ -269,7 +271,7 @@ const getDefaultCallsToActions = (collective, sections, isAdmin, isAccountant, i
 /**
  * Returns the main CTA that should be displayed as a button outside of the action menu in this component.
  */
-const getMainAction = (collective, callsToAction, LoggedInUser) => {
+const getMainAction = (collective, callsToAction, LoggedInUser, setShowContactModal, router) => {
   if (!collective || !callsToAction) {
     return null;
   }
@@ -374,14 +376,15 @@ const getMainAction = (collective, callsToAction, LoggedInUser) => {
     return {
       type: NAVBAR_ACTION_TYPE.CONTACT,
       component: (
-        <Link href={`/${collective.slug}/contact`}>
-          <ActionButton tabIndex="-1">
-            <Envelope size="1em" />
-            <Span ml={2}>
-              <FormattedMessage id="Contact" defaultMessage="Contact" />
-            </Span>
-          </ActionButton>
-        </Link>
+        <ActionButton
+          tabIndex="-1"
+          onClick={() => (LoggedInUser ? setShowContactModal(true) : router.push(`/${collective.slug}/contact`))}
+        >
+          <Envelope size="1em" />
+          <Span ml={2}>
+            <FormattedMessage id="Contact" defaultMessage="Contact" />
+          </Span>
+        </ActionButton>
       ),
     };
   } else if (callsToAction.includes(NAVBAR_ACTION_TYPE.ADD_FUNDS) && collective.host) {
@@ -426,6 +429,8 @@ const CollectiveNavbar = ({
 }) => {
   const intl = useIntl();
   const [isExpanded, setExpanded] = React.useState(false);
+  const [showContactModal, setShowContactModal] = React.useState(false);
+  const router = useRouter();
   const { LoggedInUser } = useUser();
   const isAccountant = LoggedInUser?.hasRole(roles.ACCOUNTANT, collective);
   isAdmin = isAdmin || LoggedInUser?.canEditCollective(collective);
@@ -438,8 +443,10 @@ const CollectiveNavbar = ({
     ...callsToAction,
   };
   const actionsArray = Object.keys(pickBy(callsToAction, Boolean));
-  const mainAction = getMainAction(collective, actionsArray, LoggedInUser);
-  const secondAction = actionsArray.length === 2 && getMainAction(collective, without(actionsArray, mainAction?.type));
+  const mainAction = getMainAction(collective, actionsArray, LoggedInUser, setShowContactModal, router);
+  const secondAction =
+    actionsArray.length === 2 &&
+    getMainAction(collective, without(actionsArray, mainAction?.type), LoggedInUser, setShowContactModal, router);
   const navbarRef = useRef();
   const mainContainerRef = useRef();
 
@@ -601,6 +608,11 @@ const CollectiveNavbar = ({
           </Container>
         )}
       </NavbarContentContainer>
+      <ContactCollectiveModal
+        show={showContactModal}
+        collective={collective}
+        onClose={() => setShowContactModal(false)}
+      />
     </NavBarContainer>
   );
 };
