@@ -193,6 +193,13 @@ const updateQuery = gqlV2/* GraphQL */ `
       ... on Collective {
         isApproved
       }
+      type
+      ... on AccountWithParent {
+        parent {
+          id
+          slug
+        }
+      }
     }
     update(slug: $updateSlug, account: { slug: $collectiveSlug }) {
       id
