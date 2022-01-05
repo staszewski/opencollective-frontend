@@ -340,6 +340,12 @@ export const expensesListFieldsFragment = gqlV2/* GraphQL */ `
           currency
         }
       }
+      ... on AccountWithParent {
+        parent {
+          id
+          slug
+        }
+      }
     }
     permissions {
       id
