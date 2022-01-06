@@ -9,6 +9,24 @@ import formatCollectiveType from '../lib/i18n/collective-type';
 
 import CollectivePicker from './CollectivePicker';
 
+export const collectivePickerFields = gql`
+  fragment CollectivePickerFields on Collective {
+    id
+    type
+    slug
+    name
+    currency
+    imageUrl(height: 64)
+    hostFeePercent
+    isActive
+    location {
+      address
+      country
+      structured
+    }
+  }
+`;
+
 const collectivePickerSearchQuery = gql`
   query CollectivePickerSearchQuery(
     $term: String!
@@ -19,21 +37,11 @@ const collectivePickerSearchQuery = gql`
     search(term: $term, types: $types, limit: $limit, hostCollectiveIds: $hostCollectiveIds) {
       id
       collectives {
-        id
-        type
-        slug
-        name
-        currency
-        location {
-          address
-          country
-        }
-        imageUrl(height: 64)
-        hostFeePercent
-        isActive
+        ...CollectivePickerFields
       }
     }
   }
+  ${collectivePickerFields}
 `;
 
 /** Throttle search function to limit invocations while typing */
