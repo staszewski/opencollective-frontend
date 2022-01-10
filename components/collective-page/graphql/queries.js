@@ -167,6 +167,10 @@ export const collectivePageQuery = gql`
           type
           isGuest
         }
+        tiers {
+          id
+          type
+        }
         stats {
           id
           backers {
