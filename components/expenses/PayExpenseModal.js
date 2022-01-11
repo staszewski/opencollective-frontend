@@ -25,6 +25,7 @@ import StyledInput from '../StyledInput';
 import StyledInputAmount from '../StyledInputAmount';
 import StyledInputField from '../StyledInputField';
 import StyledModal, { ModalBody, ModalHeader } from '../StyledModal';
+import StyledTooltip from '../StyledTooltip';
 import { H4, P, Span } from '../Text';
 import { withUser } from '../UserProvider';
 
@@ -269,16 +270,22 @@ const PayExpenseModal = ({ onClose, onSubmit, expense, collective, host, error }
         )}
         {canCustomizeFeesPayer(expense, collective, hasManualPayment, formik.values.paymentProcessorFee) && (
           <Flex mt={16}>
-            <StyledCheckbox
-              name="feesPayer"
-              checked={formik.values.feesPayer === 'PAYEE'}
-              onChange={({ checked }) => formik.setFieldValue('feesPayer', checked ? 'PAYEE' : 'COLLECTIVE')}
-              label={
-                <Span fontSize="12px">
-                  <FormattedMessage defaultMessage="The payee is covering the fees" />
-                </Span>
+            <StyledTooltip
+              content={
+                <FormattedMessage defaultMessage="Allows paying 100% of the balance without fees causing failure due to insufficient funds" />
               }
-            />
+            >
+              <StyledCheckbox
+                name="feesPayer"
+                checked={formik.values.feesPayer === 'PAYEE'}
+                onChange={({ checked }) => formik.setFieldValue('feesPayer', checked ? 'PAYEE' : 'COLLECTIVE')}
+                label={
+                  <Span fontSize="12px">
+                    <FormattedMessage defaultMessage="The payee is covering the fees" />
+                  </Span>
+                }
+              />
+            </StyledTooltip>
           </Flex>
         )}
         <Box mt={19} mb={3}>
