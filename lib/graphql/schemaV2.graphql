@@ -9721,10 +9721,10 @@ input ExpenseInvitee {
   name: String
   email: String
   isInvite: Boolean
-  organization: ExpenseInviteeOrg
+  organization: ExpenseInviteeOrganization
 }
 
-input ExpenseInviteeOrg {
+input ExpenseInviteeOrganization {
   description: String
   name: String
   slug: String
